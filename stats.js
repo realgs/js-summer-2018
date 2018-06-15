@@ -1,3 +1,4 @@
+let mSecInDay = 3600 * 24 * 1000;
 let oneWeek = [
     { date: new Date('2018-01-05'), visits: 54 },
     { date: new Date('2018-01-01'), visits: 32 },
@@ -23,42 +24,47 @@ let twoWeeks = oneWeek.concat(secondWeek);
 const getAverage = (series, weekdays) => {
 	if ( weekdays ){
 		var sum = new Array(7).fill(0);
+		var oldestDates = new Array(7).fill(Infinity);
+		var newestDates = new Array(7).fill(-Infinity);
 		for ( var i = 0; i < series.length; i++ ){
-			sum[series[i].date.getDay()] += series[i].visits;
+			let whichDay = series[i].date.getDay();
+			sum[whichDay] += series[i].visits;
+			oldestDates[whichDay] = series[i].date < oldestDates[whichDay] ? series[i].date : oldestDates[whichDay];
+			newestDates[whichDay] = series[i].date > newestDates[whichDay] ? series[i].date : newestDates[whichDay];
 		}
 		return {
 	      Monday: {
-	        averageVisits: sum[1],
+	        averageVisits: sum[1] / (( newestDates[1] - oldestDates[1] ) / mSecInDay + 1),
 	      },
 	      Tuesday: {
-	        averageVisits: sum[2],
+	        averageVisits: sum[2] / (( newestDates[2] - oldestDates[2] ) / mSecInDay + 1),
 	      },
 	      Wednesday: {
-	        averageVisits: sum[3],
+	        averageVisits: sum[3] / (( newestDates[3] - oldestDates[3] ) / mSecInDay + 1),
 	      },
 	      Thursday: {
-	        averageVisits: sum[4],
+	        averageVisits: sum[4] / (( newestDates[4] - oldestDates[4] ) / mSecInDay + 1),
 	      },
 	      Friday: {
-	        averageVisits: sum[5],
+	        averageVisits: sum[5] / (( newestDates[5] - oldestDates[5] ) / mSecInDay + 1),
 	      },
 	      Saturday: {
-	        averageVisits: sum[6],
+	        averageVisits: sum[6] / (( newestDates[6] - oldestDates[6] ) / mSecInDay + 1),
 	      },
 	      Sunday: {
-	        averageVisits: sum[0],
+	        averageVisits: sum[0] / (( newestDates[0] - oldestDates[0] ) / mSecInDay + 1),
 	      },
 	    };
 	} else {
 		var sum = 0;
-		var oldestDate = series[0].date.getTime();
-		var newestDate = series[series.length - 1].date.getTime();
+		var oldestDate = series[0].date;
+		var newestDate = series[series.length - 1].date;
 		for ( var i = 0; i < series.length; i++ ){
 			sum += series[i].visits;
 			oldestDate = series[i].date < oldestDate ? series[i].date : oldestDate;
 			newestDate = series[i].date > newestDate ? series[i].date : newestDate;		
 		}
-		let dateDiff = ( newestDate - oldestDate ) / (1000 * 3600 * 24) + 1;
+		let dateDiff = ( newestDate - oldestDate ) / mSecInDay + 1;
 		return { "averageVisits": (sum / dateDiff) };
 	}
 };
