@@ -1,9 +1,9 @@
 let oneWeek = [
+    { date: new Date('2018-01-05'), visits: 54 },
     { date: new Date('2018-01-01'), visits: 32 },
     { date: new Date('2018-01-02'), visits: 82 },
     { date: new Date('2018-01-03'), visits: 74 },
     { date: new Date('2018-01-04'), visits: 35 },
-    { date: new Date('2018-01-05'), visits: 54 },
     { date: new Date('2018-01-06'), visits: 64 },
     { date: new Date('2018-01-07'), visits: 44 },
 ];
@@ -51,15 +51,19 @@ const getAverage = (series, weekdays) => {
 	    };
 	} else {
 		var sum = 0;
+		var oldestDate = series[0].date.getTime();
+		var newestDate = series[series.length - 1].date.getTime();
 		for ( var i = 0; i < series.length; i++ ){
 			sum += series[i].visits;
+			oldestDate = series[i].date < oldestDate ? series[i].date : oldestDate;
+			newestDate = series[i].date > newestDate ? series[i].date : newestDate;		
 		}
-		let dateDiff = ( series[series.length - 1].date.getTime() - series[0].date.getTime() ) / (1000 * 3600 * 24) + 1;
+		let dateDiff = ( newestDate - oldestDate ) / (1000 * 3600 * 24) + 1;
 		return { "averageVisits": (sum / dateDiff) };
 	}
 };
 
-var avg = getAverage(oneWeek, false);
+var avg = getAverage(oneWeek, true);
 console.log(avg);
 
 module.exports = getAverage;
