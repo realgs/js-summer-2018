@@ -21,38 +21,46 @@ let weekday = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
 
 let twoWeeks = oneWeek.concat(secondWeek);
 
+function countCertainDays( days, d0, d1 ) {
+  var nDays = 1 + Math.round((d1-d0) / mSecInDay);
+  var sum = function(a,b) {
+    return a + Math.floor( (nDays+(d0.getDay()+6-b) % 7 ) / 7 ); };
+  return days.reduce(sum,0);
+}
 const getAverage = (series, weekdays) => {
 	if ( weekdays ){
 		var sum = new Array(7).fill(0);
-		var oldestDates = new Array(7).fill(Infinity);
-		var newestDates = new Array(7).fill(-Infinity);
+		var oldestDate = Infinity;
+		var newestDate = -Infinity;
 		for ( var i = 0; i < series.length; i++ ){
 			let whichDay = series[i].date.getDay();
 			sum[whichDay] += series[i].visits;
-			oldestDates[whichDay] = series[i].date < oldestDates[whichDay] ? series[i].date : oldestDates[whichDay];
-			newestDates[whichDay] = series[i].date > newestDates[whichDay] ? series[i].date : newestDates[whichDay];
+			oldestDate = series[i].date < oldestDate ? series[i].date : oldestDate;
+			newestDate = series[i].date > newestDate ? series[i].date : newestDate;
 		}
+		let nDays = countCertainDays([0, 1, 2, 3, 4, 5, 6], oldestDate, newestDate);
+		console.log(countCertainDays([0, 1, 2, 3, 4, 5, 6], oldestDate, newestDate));
 		return {
 	      Monday: {
-	        averageVisits: sum[1] / (( newestDates[1] - oldestDates[1] ) / mSecInDay + 1),
+	        averageVisits: sum[1] / countCertainDays([1], oldestDate, newestDate),
 	      },
 	      Tuesday: {
-	        averageVisits: sum[2] / (( newestDates[2] - oldestDates[2] ) / mSecInDay + 1),
+	        averageVisits: sum[2] / countCertainDays([2], oldestDate, newestDate),
 	      },
 	      Wednesday: {
-	        averageVisits: sum[3] / (( newestDates[3] - oldestDates[3] ) / mSecInDay + 1),
+	        averageVisits: sum[3] / countCertainDays([3], oldestDate, newestDate),
 	      },
 	      Thursday: {
-	        averageVisits: sum[4] / (( newestDates[4] - oldestDates[4] ) / mSecInDay + 1),
+	        averageVisits: sum[4] / countCertainDays([4], oldestDate, newestDate),
 	      },
 	      Friday: {
-	        averageVisits: sum[5] / (( newestDates[5] - oldestDates[5] ) / mSecInDay + 1),
+	        averageVisits: sum[5] / countCertainDays([5], oldestDate, newestDate),
 	      },
 	      Saturday: {
-	        averageVisits: sum[6] / (( newestDates[6] - oldestDates[6] ) / mSecInDay + 1),
+	        averageVisits: sum[6] / countCertainDays([6], oldestDate, newestDate),
 	      },
 	      Sunday: {
-	        averageVisits: sum[0] / (( newestDates[0] - oldestDates[0] ) / mSecInDay + 1),
+	        averageVisits: sum[0] / countCertainDays([0], oldestDate, newestDate),
 	      },
 	    };
 	} else {
@@ -64,12 +72,17 @@ const getAverage = (series, weekdays) => {
 			oldestDate = series[i].date < oldestDate ? series[i].date : oldestDate;
 			newestDate = series[i].date > newestDate ? series[i].date : newestDate;		
 		}
-		let dateDiff = ( newestDate - oldestDate ) / mSecInDay + 1;
-		return { "averageVisits": (sum / dateDiff) };
+		let nDays = ( newestDate - oldestDate ) / mSecInDay + 1;
+		return { "averageVisits": (sum / nDays) };
 	}
 };
 
 var avg = getAverage(oneWeek, true);
 console.log(avg);
+var avg = getAverage(secondWeek, true);
+console.log(avg);
+var avg = getAverage(twoWeeks, true);
+console.log(avg);
+
 
 module.exports = getAverage;
