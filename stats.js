@@ -19,7 +19,7 @@ const getAverage = (series, weekdayMode) => {
 			var sum = new Array(7).fill(0);
 			for ( var i = 0; i < series.length; i++ ){
 				let currentDay = series[i].date.getDay();
-				sum[currentDay] += series[i].visits;
+				sum[currentDay] += series[i].visits < 0 ? 0 : series[i].visits;
 			}
 			return {
 		      Monday: {
@@ -47,7 +47,7 @@ const getAverage = (series, weekdayMode) => {
 		} else {
 			var sum = 0;
 			for ( var i = 0; i < series.length; i++ ){
-				sum += series[i].visits;	
+				sum += series[i].visits < 0 ? 0 : series[i].visits;	
 			}
 			return { "averageVisits": (sum / nDays) };
 		}
